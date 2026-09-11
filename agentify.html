@@ -1,0 +1,611 @@
+<title>Agentify</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#eef2f6;
+    --paper:#ffffff;
+    --ink:#0f2b46;
+    --ink-soft:#4a637a;
+    --line:#c3d2de;
+    --line-strong:#0f2b46;
+    --accent:#c9622a;
+    --accent-soft:#f5e2d2;
+    --code-bg:#0d2436;
+    --code-ink:#dcecf4;
+    --code-line:#2a4a63;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#071824;
+      --paper:#0e2536;
+      --ink:#e3edf4;
+      --ink-soft:#93aec2;
+      --line:#22415a;
+      --line-strong:#7ec8e3;
+      --accent:#e2884f;
+      --accent-soft:#33261c;
+      --code-bg:#04101a;
+      --code-ink:#d7ecf5;
+      --code-line:#1c384c;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#071824;
+    --paper:#0e2536;
+    --ink:#e3edf4;
+    --ink-soft:#93aec2;
+    --line:#22415a;
+    --line-strong:#7ec8e3;
+    --accent:#e2884f;
+    --accent-soft:#33261c;
+    --code-bg:#04101a;
+    --code-ink:#d7ecf5;
+    --code-line:#1c384c;
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:
+      repeating-linear-gradient(0deg, var(--line) 0 1px, transparent 1px 32px),
+      repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 32px),
+      var(--bg);
+    background-blend-mode:normal;
+    color:var(--ink);
+    font-family:"IBM Plex Sans", system-ui, sans-serif;
+    font-size:16px;
+    line-height:1.55;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]) body{
+      background:
+        repeating-linear-gradient(0deg, var(--line) 0 1px, transparent 1px 32px),
+        repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 32px),
+        var(--bg);
+    }
+  }
+
+  h1,h2,h3{
+    font-family:"IBM Plex Sans Condensed", "IBM Plex Sans", system-ui, sans-serif;
+    color:var(--ink);
+    margin:0;
+    text-wrap:balance;
+  }
+  code, .mono, .k, .tree, .cmd{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+  }
+  a{color:var(--accent);}
+
+  .sheet{
+    max-width:920px;
+    margin:0 auto;
+    padding:0 28px 96px;
+  }
+
+  /* ---- Titleblock ---- */
+  .titleblock{
+    max-width:920px;
+    margin:0 auto;
+    padding:40px 28px 24px;
+  }
+  .tb-frame{
+    border:1.5px solid var(--line-strong);
+    background:var(--paper);
+    padding:28px 28px 20px;
+  }
+  .tb-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:24px;
+    flex-wrap:wrap;
+  }
+  .tb-name{
+    font-size:clamp(2.4rem, 6vw, 3.6rem);
+    font-weight:700;
+    letter-spacing:-0.01em;
+  }
+  .tb-tagline{
+    color:var(--ink-soft);
+    font-size:1.05rem;
+    max-width:46ch;
+    margin-top:6px;
+  }
+  .tb-badge{
+    border:1px solid var(--line-strong);
+    padding:6px 10px;
+    font-size:0.72rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    white-space:nowrap;
+    color:var(--ink-soft);
+  }
+  .tb-meta{
+    margin-top:22px;
+    padding-top:16px;
+    border-top:1px dashed var(--line);
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(140px,1fr));
+    gap:14px;
+  }
+  .tb-meta dt{
+    font-size:.68rem;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 3px;
+  }
+  .tb-meta dd{
+    margin:0;
+    font-size:.86rem;
+    font-family:"IBM Plex Mono", monospace;
+  }
+
+  /* ---- Section scaffolding ---- */
+  section{margin-top:64px;}
+  .eyebrow{
+    font-size:.72rem;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--accent);
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:22px;height:1px;background:var(--accent);display:inline-block;
+  }
+  h2{font-size:clamp(1.5rem,3vw,1.9rem); font-weight:600;}
+  .lede{color:var(--ink-soft); max-width:64ch; margin-top:10px; font-size:1rem;}
+
+  /* ---- Pipeline diagram ---- */
+  .diagram-wrap{
+    margin-top:28px;
+    border:1px solid var(--line);
+    background:var(--paper);
+    padding:12px 8px 4px;
+  }
+  .diagram-wrap svg{display:block; width:100%; height:auto;}
+  .diagram-cap{
+    font-size:.75rem;
+    color:var(--ink-soft);
+    padding:10px 16px 14px;
+    border-top:1px dashed var(--line);
+    margin-top:4px;
+  }
+
+  /* ---- Step list ---- */
+  .steps{margin-top:26px; display:flex; flex-direction:column;}
+  .step{
+    display:grid;
+    grid-template-columns:44px 1fr;
+    gap:16px;
+    padding:16px 0;
+    border-top:1px solid var(--line);
+  }
+  .step:last-child{border-bottom:1px solid var(--line);}
+  .step-n{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:.8rem;
+    color:var(--accent);
+    padding-top:2px;
+  }
+  .step h3{font-size:1.02rem; font-weight:600;}
+  .step p{margin:6px 0 0; color:var(--ink-soft); font-size:.93rem; max-width:60ch;}
+  .step .file{color:var(--ink); background:var(--accent-soft); padding:1px 5px; border-radius:2px; font-size:.85em;}
+
+  /* ---- Pass cards ---- */
+  .passes{
+    margin-top:26px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+  }
+  .pass{
+    background:var(--paper);
+    padding:18px 18px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .pass-name{
+    font-family:"IBM Plex Mono", monospace;
+    font-weight:600;
+    font-size:.92rem;
+  }
+  .pass-name .num{color:var(--accent); margin-right:8px;}
+  .pass dl{margin:4px 0 0; font-size:.82rem; color:var(--ink-soft);}
+  .pass dt{font-size:.66rem; letter-spacing:.08em; text-transform:uppercase; margin-top:8px;}
+  .pass dd{margin:2px 0 0; color:var(--ink);}
+  .pass .parallel-tag{
+    align-self:flex-start;
+    font-size:.65rem;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--accent);
+    border:1px solid var(--accent);
+    padding:2px 6px;
+    margin-top:auto;
+  }
+
+  /* ---- File tree ---- */
+  .tree-panel{
+    margin-top:26px;
+    background:var(--code-bg);
+    color:var(--code-ink);
+    border:1px solid var(--line-strong);
+    padding:22px 24px;
+    overflow-x:auto;
+  }
+  .tree{font-size:.86rem; line-height:1.9; white-space:pre;}
+  .tree .path{color:var(--code-ink); font-weight:600;}
+  .tree .desc{color:#7fa6bf;}
+  .tree .branch{color:#4c7e99;}
+
+  /* ---- Golden rule callout ---- */
+  .callout{
+    margin-top:26px;
+    border:1.5px solid var(--accent);
+    background:var(--accent-soft);
+    padding:22px 24px;
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:18px;
+    align-items:start;
+  }
+  .callout .mark{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:1.6rem;
+    color:var(--accent);
+    line-height:1;
+  }
+  .callout p{margin:0 0 8px; font-size:.95rem;}
+  .callout code.gap{
+    display:inline-block;
+    background:var(--code-bg);
+    color:var(--code-ink);
+    padding:2px 8px;
+    font-size:.85rem;
+  }
+
+  /* ---- Install ---- */
+  .install-grid{
+    margin-top:26px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(320px,1fr));
+    gap:20px;
+  }
+  .install-card{
+    border:1px solid var(--line);
+    background:var(--paper);
+    padding:20px 22px 22px;
+  }
+  .install-card h3{font-size:1rem; font-weight:600; display:flex; align-items:center; gap:8px;}
+  .install-card .rec{
+    font-size:.65rem;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--accent);
+    border:1px solid var(--accent);
+    padding:1px 6px;
+  }
+  .install-card p{color:var(--ink-soft); font-size:.88rem; margin:8px 0 14px;}
+  .cmdblock{
+    background:var(--code-bg);
+    color:var(--code-ink);
+    padding:14px 16px;
+    font-size:.82rem;
+    line-height:1.8;
+    overflow-x:auto;
+  }
+  .cmdblock .cmt{color:#5f8aa3;}
+  .cmdblock .prompt{color:var(--accent);}
+
+  /* ---- Footer ---- */
+  footer{
+    margin-top:70px;
+    padding-top:20px;
+    border-top:1px dashed var(--line);
+    color:var(--ink-soft);
+    font-size:.82rem;
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  footer .refs code{color:var(--ink);}
+
+  @media (max-width:560px){
+    .titleblock, .sheet{padding-left:16px; padding-right:16px;}
+    .tb-frame{padding:20px 18px 16px;}
+  }
+</style>
+
+<div class="titleblock">
+  <div class="tb-frame">
+    <div class="tb-top">
+      <div>
+        <div class="tb-name">agentify</div>
+        <div class="tb-tagline">Convierte cualquier repositorio en un paquete de contexto legible por agentes: un <code>AGENTS.md</code> y siete documentos en <code>docs/agent/</code>, generados por seis pasadas de agentes especializados.</div>
+      </div>
+      <div class="tb-badge">plugin · claude code</div>
+    </div>
+    <dl class="tb-meta">
+      <div><dt>Versión</dt><dd>1.11.0</dd></div>
+      <div><dt>Comando</dt><dd>/agentify:agentify</dd></div>
+      <div><dt>Idioma de salida</dt><dd>english (fijo)</dd></div>
+      <div><dt>Marketplace</dt><dd>agentify-local</dd></div>
+    </dl>
+  </div>
+</div>
+
+<div class="sheet">
+
+  <section id="pipeline">
+    <div class="eyebrow">Sheet 01 — el mecanismo</div>
+    <h2>De repositorio a paquete de contexto</h2>
+    <p class="lede">Un escaneo determinista alimenta a seis pasadas especializadas que corren en paralelo. Cada una escribe su propio documento; nadie más lo toca.</p>
+
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 920 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama del pipeline de agentify: el repositorio pasa por scan_repo.py, se reparte en cinco pasadas paralelas más standards-writer, y converge en la edición final validada.">
+        <g font-family="IBM Plex Mono, monospace" font-size="12.5">
+          <!-- theme-aware colors via CSS variables referenced through style attr won't work in all renderers reliably, so use currentColor pattern with explicit fill matching light/dark via class -->
+          <defs>
+            <marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L8,4 L0,8 z" class="diagram-line-fill"></path>
+            </marker>
+          </defs>
+
+          <!-- repo node -->
+          <rect x="20" y="150" width="110" height="56" class="diagram-box"></rect>
+          <text x="75" y="183" text-anchor="middle" class="diagram-text">repo</text>
+
+          <!-- scan node -->
+          <line x1="130" y1="178" x2="190" y2="178" class="diagram-line" marker-end="url(#arrow)"></line>
+          <rect x="190" y="150" width="150" height="56" class="diagram-box"></rect>
+          <text x="265" y="176" text-anchor="middle" class="diagram-text">scan_repo.py</text>
+          <text x="265" y="192" text-anchor="middle" class="diagram-subtext">→ scan.json</text>
+
+          <!-- fan out lines to 5 parallel passes -->
+          <line x1="340" y1="178" x2="392" y2="40"  class="diagram-line" marker-end="url(#arrow)"></line>
+          <line x1="340" y1="178" x2="392" y2="110" class="diagram-line" marker-end="url(#arrow)"></line>
+          <line x1="340" y1="178" x2="392" y2="180" class="diagram-line" marker-end="url(#arrow)"></line>
+          <line x1="340" y1="178" x2="392" y2="250" class="diagram-line" marker-end="url(#arrow)"></line>
+          <line x1="340" y1="178" x2="392" y2="320" class="diagram-line" marker-end="url(#arrow)"></line>
+
+          <!-- 5 parallel pass boxes -->
+          <rect x="392" y="14"  width="180" height="52" class="diagram-box"></rect>
+          <text x="482" y="35"  text-anchor="middle" class="diagram-text">repo-scout</text>
+          <text x="482" y="51"  text-anchor="middle" class="diagram-subtext">archetype, identidad</text>
+
+          <rect x="392" y="84"  width="180" height="52" class="diagram-box"></rect>
+          <text x="482" y="105" text-anchor="middle" class="diagram-text">architect</text>
+          <text x="482" y="121" text-anchor="middle" class="diagram-subtext">architecture.md</text>
+
+          <rect x="392" y="154" width="180" height="52" class="diagram-box"></rect>
+          <text x="482" y="175" text-anchor="middle" class="diagram-text">contract-mapper</text>
+          <text x="482" y="191" text-anchor="middle" class="diagram-subtext">contracts.md</text>
+
+          <rect x="392" y="224" width="180" height="52" class="diagram-box"></rect>
+          <text x="482" y="245" text-anchor="middle" class="diagram-text">ops-engineer</text>
+          <text x="482" y="261" text-anchor="middle" class="diagram-subtext">runbook.md</text>
+
+          <rect x="392" y="294" width="180" height="52" class="diagram-box"></rect>
+          <text x="482" y="315" text-anchor="middle" class="diagram-text">trap-hunter</text>
+          <text x="482" y="331" text-anchor="middle" class="diagram-subtext">traps.md · commits.json</text>
+
+          <!-- repo-scout feeds standards-writer -->
+          <line x1="572" y1="40" x2="642" y2="150" class="diagram-line diagram-line-dash" marker-end="url(#arrow)"></line>
+          <rect x="642" y="122" width="180" height="52" class="diagram-box"></rect>
+          <text x="732" y="143" text-anchor="middle" class="diagram-text">standards-writer</text>
+          <text x="732" y="159" text-anchor="middle" class="diagram-subtext">rules · security-rules</text>
+
+          <!-- all five converge to editor -->
+          <line x1="572" y1="40"  x2="642" y2="178" class="diagram-line" marker-end="url(#arrow)"></line>
+          <line x1="572" y1="110" x2="642" y2="178" class="diagram-line" marker-end="url(#arrow)"></line>
+          <line x1="572" y1="180" x2="642" y2="178" class="diagram-line" marker-end="url(#arrow)"></line>
+          <line x1="572" y1="250" x2="642" y2="178" class="diagram-line" marker-end="url(#arrow)"></line>
+          <line x1="572" y1="320" x2="642" y2="178" class="diagram-line" marker-end="url(#arrow)"></line>
+          <line x1="822" y1="148" x2="852" y2="178" class="diagram-line" marker-end="url(#arrow)"></line>
+
+          <rect x="642" y="154" width="70" height="0" opacity="0"></rect>
+          <!-- editor node -->
+          <line x1="642" y1="178" x2="782" y2="178" opacity="0"></line>
+          <rect x="782" y="150" width="118" height="90" class="diagram-box diagram-box-accent"></rect>
+          <text x="841" y="176" text-anchor="middle" class="diagram-text">editor</text>
+          <text x="841" y="192" text-anchor="middle" class="diagram-subtext">AGENTS.md</text>
+          <text x="841" y="206" text-anchor="middle" class="diagram-subtext">overview.md</text>
+          <text x="841" y="220" text-anchor="middle" class="diagram-subtext">+ validación</text>
+        </g>
+      </svg>
+    </div>
+    <div class="diagram-cap">1 repo → 1 scan determinista → 5 pasadas en paralelo (+ standards-writer, que espera a repo-scout) → edición final validada.</div>
+  </section>
+
+  <section id="steps">
+    <div class="eyebrow">Sheet 02 — el flujo, paso a paso</div>
+    <h2>Cinco pasos, nada de bash de más</h2>
+    <p class="lede">Todo el flujo pide permiso de Bash una sola vez: para correr el escáner. Las seis pasadas trabajan solo con <code>Read</code>, <code>Glob</code>, <code>Grep</code> y <code>Write</code>.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-n">01</div>
+        <div>
+          <h3>Gate — ¿aplica?</h3>
+          <p><span class="file">scan_repo.py --check</span> decide si el directorio es un proyecto de desarrollo real. Si no lo es, la respuesta es exactamente <code>not applicable</code> y no se escribe nada.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">02</div>
+        <div>
+          <h3>Escaneo determinista</h3>
+          <p>Un único <code>scan_repo.py</code> produce <span class="file">.agentify/scan.json</span>: lenguajes, manifiestos, frameworks, entrypoints, capas, CI/CD, contenedores, variables de entorno y metadata de git. Se trata como hipótesis a confirmar, no como verdad absoluta.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">03</div>
+        <div>
+          <h3>Seis pasadas especializadas</h3>
+          <p>Cinco corren en paralelo (repo-scout, architect, contract-mapper, ops-engineer, trap-hunter); standards-writer arranca cuando repo-scout entrega el inventario. Cada una escribe su propio archivo y responde con un resumen de una línea — el contenido nunca se duplica en el contexto del orquestador.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">04</div>
+        <div>
+          <h3>Edición final</h3>
+          <p>Con esos resúmenes, el orquestador escribe <span class="file">AGENTS.md</span> y <span class="file">overview.md</span> — los dos únicos documentos que dependen de todo lo demás — y unifica el tono.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">05</div>
+        <div>
+          <h3>Validación</h3>
+          <p><span class="file">validate_agentification.py</span> revisa estructura, front-matter completo, links relativos, que <code>version</code> coincida con el HEAD de git, el presupuesto de 200 líneas por documento y los placeholders sin rellenar.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="passes">
+    <div class="eyebrow">Sheet 03 — las seis pasadas</div>
+    <h2>Un especialista por documento</h2>
+    <p class="lede">Cada pasada corre en <code>haiku</code>, sin Bash, y lee primero <code>accuracy-rules.md</code>: rastrear el flujo real sin inferir, ubicar cada control en su capa real, precisión literal, y etiquetar la certeza de lo que afirma.</p>
+
+    <div class="passes">
+      <div class="pass">
+        <div class="pass-name"><span class="num">01</span>repo-scout</div>
+        <dl>
+          <dt>Produce</dt><dd>inventario confirmado, identidad, <code>archetype</code></dd>
+          <dt>Entrada</dt><dd>scan.json + repo</dd>
+        </dl>
+        <span class="parallel-tag">corre primero</span>
+      </div>
+      <div class="pass">
+        <div class="pass-name"><span class="num">02</span>architect</div>
+        <dl>
+          <dt>Produce</dt><dd>architecture.md</dd>
+          <dt>Entrada</dt><dd>capas, entrypoints, flujo</dd>
+        </dl>
+        <span class="parallel-tag">en paralelo</span>
+      </div>
+      <div class="pass">
+        <div class="pass-name"><span class="num">03</span>contract-mapper</div>
+        <dl>
+          <dt>Produce</dt><dd>contracts.md</dd>
+          <dt>Entrada</dt><dd>handlers, clientes, tópicos, schemas</dd>
+        </dl>
+        <span class="parallel-tag">en paralelo</span>
+      </div>
+      <div class="pass">
+        <div class="pass-name"><span class="num">04</span>ops-engineer</div>
+        <dl>
+          <dt>Produce</dt><dd>runbook.md</dd>
+          <dt>Entrada</dt><dd>Makefile, CI, Docker, tests</dd>
+        </dl>
+        <span class="parallel-tag">en paralelo</span>
+      </div>
+      <div class="pass">
+        <div class="pass-name"><span class="num">05</span>trap-hunter</div>
+        <dl>
+          <dt>Produce</dt><dd>traps.md</dd>
+          <dt>Entrada</dt><dd>commits.json, TODOs, config frágil</dd>
+        </dl>
+        <span class="parallel-tag">en paralelo</span>
+      </div>
+      <div class="pass">
+        <div class="pass-name"><span class="num">06</span>standards-writer</div>
+        <dl>
+          <dt>Produce</dt><dd>rules.md, security-rules.md</dd>
+          <dt>Entrada</dt><dd>stack + convenciones reales del repo</dd>
+        </dl>
+        <span class="parallel-tag">tras repo-scout</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="output">
+    <div class="eyebrow">Sheet 04 — qué queda en el repo</div>
+    <h2>El paquete de contexto</h2>
+    <p class="lede">Ocho archivos, cada uno con un presupuesto de tamaño estricto — entre 60 y 200 líneas — para que citen <code>file:line</code> en vez de pegar código.</p>
+
+    <div class="tree-panel">
+<div class="tree"><span class="path">AGENTS.md</span>                  <span class="desc">identidad + orden de lectura (front-matter: app, archetype, criticality, slack_channel, on_call, version, validated)</span>
+<span class="path">docs/agent/</span>
+<span class="branch">├──</span> <span class="path">overview.md</span>          <span class="desc">qué hace el repo, sus capacidades y dónde vive cada una</span>
+<span class="branch">├──</span> <span class="path">architecture.md</span>      <span class="desc">capas, entrypoints, mapa del repo, flujo de datos</span>
+<span class="branch">├──</span> <span class="path">contracts.md</span>          <span class="desc">qué expone y de qué depende</span>
+<span class="branch">├──</span> <span class="path">runbook.md</span>            <span class="desc">build/run/test y Definition of Done</span>
+<span class="branch">├──</span> <span class="path">traps.md</span>              <span class="desc">trampas tácitas que no se ven en el código</span>
+<span class="branch">├──</span> <span class="path">rules.md</span>              <span class="desc">buenas prácticas de código para este stack</span>
+<span class="branch">└──</span> <span class="path">security-rules.md</span>     <span class="desc">reglas de seguridad</span></div>
+    </div>
+  </section>
+
+  <section id="golden-rule">
+    <div class="eyebrow">Sheet 05 — la regla que sostiene todo</div>
+    <h2>Nada se inventa</h2>
+    <div class="callout">
+      <div class="mark">¶</div>
+      <div>
+        <p>Todo lo escrito debe rastrearse a un archivo del repo, a la salida de un comando, o a algo que el usuario dijo explícitamente. Cuando algo no se puede verificar, el documento lo declara en vez de rellenarlo con una suposición plausible:</p>
+        <p><code class="gap">gap — confirm with &lt;team&gt;</code></p>
+        <p>Ese marcador es un entregable válido. Al cerrar, agentify reporta cuántos <code>gap —</code> quedan: esa lista es el cuestionario para el equipo dueño del repo.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="install">
+    <div class="eyebrow">Sheet 06 — instalación y uso</div>
+    <h2>Dos formas de correrlo</h2>
+
+    <div class="install-grid">
+      <div class="install-card">
+        <h3>Como plugin <span class="rec">recomendado</span></h3>
+        <p>Usa subagentes en paralelo — las seis pasadas corren de verdad al mismo tiempo.</p>
+        <div class="cmdblock"><span class="cmt"># desde el directorio que contiene agentify-marketplace</span>
+<span class="prompt">›</span> /plugin marketplace add ./agentify-marketplace
+<span class="prompt">›</span> /plugin install agentify@agentify-local
+<span class="cmt"># si el resumen lo pide:</span>
+<span class="prompt">›</span> /reload-plugins
+
+<span class="cmt"># uso</span>
+<span class="prompt">›</span> /agentify:agentify [path] [--dry-run]</div>
+      </div>
+      <div class="install-card">
+        <h3>Como skill independiente</h3>
+        <p>Sin subagentes: las pasadas se ejecutan en secuencia, en un solo hilo.</p>
+        <div class="cmdblock"><span class="cmt"># copiar la carpeta de la skill</span>
+cp -r skills/agentify-repo/ \
+  ~/.claude/skills/agentify-repo/
+
+<span class="cmt"># se activa sola al pedir</span>
+<span class="cmt"># "agentifica este repo"</span></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="sheet">
+  <footer>
+    <span>Los documentos generados siempre quedan en inglés — decisión fija del plugin, sin flag para cambiarla.</span>
+    <span class="refs">personalización: <code>references/templates.md</code>, <code>references/stacks.md</code>, <code>references/agents.md</code></span>
+  </footer>
+</div>
+
+<style>
+  .diagram-box{ fill: var(--paper); stroke: var(--line-strong); stroke-width:1.2; }
+  .diagram-box-accent{ fill: var(--accent-soft); stroke: var(--accent); stroke-width:1.4; }
+  .diagram-text{ fill: var(--ink); font-weight:600; }
+  .diagram-subtext{ fill: var(--ink-soft); font-size:10px; }
+  .diagram-line{ stroke: var(--line-strong); stroke-width:1.1; fill:none; }
+  .diagram-line-dash{ stroke-dasharray:3 3; }
+  .diagram-line-fill{ fill: var(--line-strong); }
+</style>
